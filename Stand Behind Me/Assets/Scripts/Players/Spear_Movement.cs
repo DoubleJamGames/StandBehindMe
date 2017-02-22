@@ -6,6 +6,7 @@ public class Spear_Movement : MonoBehaviour
 {
     public float speed;
     public float jump;
+    bool jumpReady = false;
 
     // Use this for initialization
     void Start()
@@ -27,6 +28,14 @@ public class Spear_Movement : MonoBehaviour
         else if (Input.GetKey(KeyCode.RightArrow))
         {
             transform.position += Vector3.right * Time.deltaTime * speed;
+        }
+    }
+
+    void OnCollisionEnter(Collision c)
+    {
+        if (c.gameObject.tag == "Platform")
+        {
+            jumpReady = true;
         }
     }
 
