@@ -4,39 +4,37 @@ using UnityEngine;
 
 public class Shield_Movement : MonoBehaviour
 {
-    public float speed;
-    public float jump;
+    public float speed = 10f;
+    public float jumpForce = 5f;
+    public float moveForce = 6f;
     bool jumpReady = true;
+    
 
-    void OnCollisionEnter(Collision c)
-    {
-        if (c.gameObject.tag == "Platform")
-        {
-            jumpReady = true;
-        }
-    }
+    private Rigidbody2D _myRigidbody;
+
 
     // Use this for initialization
     void Start()
     {
-
+        _myRigidbody = GetComponent<Rigidbody2D>();
     }
 
     // Update is called once per frame
-    void Update()
-    {
-        if ((Input.GetKey(KeyCode.W)) && jumpReady)
+    void FixedUpdate(){
+
+        float moveHorizontal = Input.GetAxis("Horizontal");
+
+        if (moveHorizontal * _myRigidbody.velocity.x < speed)
+            _myRigidbody.AddForce(Vector2.right * moveHorizontal * moveForce);
+
+        if (Mathf.Abs(_myRigidbody.velocity.x) > speed)
+            _myRigidbody.velocity = new Vector2(Mathf.Sign(_myRigidbody.velocity.x) * speed, _myRigidbody.velocity.y);
+
+        if (Input.GetButtonDown("Fire2") && jumpReady)
         {
-            transform.position += Vector3.up * Time.deltaTime * jump;
             jumpReady = false;
+            _myRigidbody.AddForce(new Vector2(0f, jumpForce));
         }
-        else if (Input.GetKey(KeyCode.A))
-        {
-            transform.position += Vector3.left * Time.deltaTime * speed;
-        }
-        else if (Input.GetKey(KeyCode.D))
-        {
-            transform.position += Vector3.right * Time.deltaTime * speed;
-        }
+
     }
 }
