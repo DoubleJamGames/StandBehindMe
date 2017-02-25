@@ -5,7 +5,7 @@ using UnityEngine;
 public class Shield_Movement : MonoBehaviour
 {
     public float speed = 10f;
-    public float jumpForce = 5f;
+    public float jumpForce = 100f;
     public float moveForce = 6f;
     bool jumpReady = true;
     
@@ -30,10 +30,11 @@ public class Shield_Movement : MonoBehaviour
         if (Mathf.Abs(_myRigidbody.velocity.x) > speed)
             _myRigidbody.velocity = new Vector2(Mathf.Sign(_myRigidbody.velocity.x) * speed, _myRigidbody.velocity.y);
 
-        if (Input.GetButtonDown("Fire2") && jumpReady)
+        if (Input.GetButtonDown("PS4_X"))
         {
-            jumpReady = false;
-            _myRigidbody.AddForce(new Vector2(0f, jumpForce));
+            Debug.Log("Got into PS4_X jump");
+            _myRigidbody.AddForce(Vector2.up * jumpForce);
+           // jumpReady = false;
         }
 
     }
