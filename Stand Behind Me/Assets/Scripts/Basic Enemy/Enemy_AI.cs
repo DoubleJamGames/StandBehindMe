@@ -6,6 +6,8 @@ public class Enemy_AI : MonoBehaviour {
 
 	public GameObject Players;
 	public GameObject Enemy;
+    public GameObject fireballPrefab;
+
     public float speed = 3f;
     public float distance;
 
@@ -29,19 +31,40 @@ public class Enemy_AI : MonoBehaviour {
         distance = Mathf.Abs(Players.transform.position.x) - Mathf.Abs(Enemy.transform.position.x);
 
         Debug.Log(distance);
-
-        if (distance <= 2)
+        if (distance >= 0)
         {
-            //Call attack
-        }
-        else if(distance < 10)
-        {
-            offset = Vector3.left * speed;
-        }
+            if (distance <= 2)
+            {
+                GameObject clone;
+                clone = (Instantiate(fireballPrefab, transform.position, transform.rotation)) as GameObject;
+                
+                clone.GetComponent<Rigidbody2D>().AddForce(Vector2.left * 100f);
 
-        //------Move the enemy-----
-        Vector3 target = transform.position += offset * Time.deltaTime;
-        transform.position = Vector3.MoveTowards(transform.position, target, 5);
-        
+            }
+            else if (distance < 10)
+            {
+                offset = Vector3.left * speed;
+            }
+
+            //------Move the enemy-----
+            Vector3 target = transform.position += offset * Time.deltaTime;
+            transform.position = Vector3.MoveTowards(transform.position, target, 5);
+        }
+        else
+        {
+            if (distance <= -10)
+            {
+                //Call attack
+            }
+            else if (distance < -2)
+            {
+                offset = Vector3.right * speed;
+            }
+
+            //------Move the enemy-----
+            Vector3 target = transform.position += offset * Time.deltaTime;
+            transform.position = Vector3.MoveTowards(transform.position, target, 5);
+
+        }
 	}
 }
