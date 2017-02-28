@@ -4,38 +4,58 @@ using UnityEngine;
 
 public class Shield_Movement : MonoBehaviour
 {
-    public float speed = 10f;
-    public float jumpForce = 100f;
-    public float moveForce = 6f;
-    bool jumpReady = true;
-    
+	public float speed = 3f;
+	public float maxMovementDist = 1f;
+	public float jumpPower = 12f;
+	public float jumpDecel = 20f;
 
-    private Rigidbody2D _myRigidbody;
+	bool jumping = false;
+	float currJumpTime = 0f;
+
+	// Use this for initialization
+	void Start()
+	{
+
+	}
+
+	// Update is called once per frame
+	void Update()
+	{
+		Vector3 new_offset = Vector3.zero;
+		//============= Input Detection ==================
+		// Detect lateral movement
+		if (Input.GetKey (KeyCode.LeftArrow)) 
+		{
+			new_offset += Vector3.left * speed;
+		} else if (Input.GetKey (KeyCode.RightArrow)) {
+			new_offset += Vector3.right * speed;
+		}
+
+		// If Jump input detected, set the state to the rising jump phase
+		if (Input.GetKey(KeyCode.UpArrow) && !jumping) 
+		{
+			jumping = true;
+		}
+		//============================================
 
 
-    // Use this for initialization
-    void Start()
-    {
-        _myRigidbody = GetComponent<Rigidbody2D>();
-    }
+		if (jumping) {
+			new_offset += Vector3.up * (jumpPower - (jumpDecel * currJumpTime));
+			currJumpTime += Time.deltaTime;
+		}
 
-    // Update is called once per frame
-    void FixedUpdate(){
+		//===================== TRANSFORM POSITION UPDATE =================
+		Vector3 target_point = transform.position += new_offset * Time.deltaTime;
+		transform.position = Vector3.MoveTowards(transform.position, target_point, 5);
+	}
 
-        float moveHorizontal = Input.GetAxis("Horizontal");
-
-        if (moveHorizontal * _myRigidbody.velocity.x < speed)
-            _myRigidbody.AddForce(Vector2.right * moveHorizontal * moveForce);
-
-        if (Mathf.Abs(_myRigidbody.velocity.x) > speed)
-            _myRigidbody.velocity = new Vector2(Mathf.Sign(_myRigidbody.velocity.x) * speed, _myRigidbody.velocity.y);
-
-        if (Input.GetButtonDown("PS4_X"))
-        {
-            Debug.Log("Got into PS4_X jump");
-            _myRigidbody.AddForce(Vector2.up * jumpForce);
-           // jumpReady = false;
-        }
-
-    }
+	void OnCollisionEnter2D(Collision2D c)
+	{
+		// Detect Landing
+		if (c.gameObject.tag == "Platform")
+		{
+			jumping = false;
+			currJumpTime = 0f;
+		}
+	}
 }
