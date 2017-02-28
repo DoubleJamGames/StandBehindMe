@@ -4,9 +4,13 @@ using UnityEngine;
 
 public class Spear_Movement : MonoBehaviour
 {
-    public float speed;
-    public float jump;
-    bool jumpReady = false;
+    public float speed = 3f;
+	public float maxMovementDist = 1f;
+	public float jumpPower = 12f;
+	public float jumpDecel = 20f;
+    
+	bool jumping = false;
+	float currJumpTime = 0f;
 
     // Use this for initialization
     void Start()
@@ -17,29 +21,41 @@ public class Spear_Movement : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKey(KeyCode.UpArrow))
-        {
-            transform.position += Vector3.up * Time.deltaTime * jump;
+		Vector3 new_offset = Vector3.zero;
+		//============= Input Detection ==================
+		// Detect lateral movement
+		if (Input.GetKey (KeyCode.LeftArrow)) 
+		{
+			new_offset += Vector3.left * speed;
+		} else if (Input.GetKey (KeyCode.RightArrow)) {
+			new_offset += Vector3.right * speed;
+		}
+
+		// If Jump input detected, set the state to the rising jump phase
+		if (Input.GetKey(KeyCode.UpArrow) && !jumping) 
+		{
+			jumping = true;
         }
-        else if (Input.GetKey(KeyCode.LeftArrow))
-        {
-            transform.position += Vector3.left * Time.deltaTime * speed;
-        }
-        else if (Input.GetKey(KeyCode.RightArrow))
-        {
-            transform.position += Vector3.right * Time.deltaTime * speed;
-        }
+		//============================================
+
+
+		if (jumping) {
+			new_offset += Vector3.up * (jumpPower - (jumpDecel * currJumpTime));
+			currJumpTime += Time.deltaTime;
+		}
+
+		//===================== TRANSFORM POSITION UPDATE =================
+		Vector3 target_point = transform.position += new_offset * Time.deltaTime;
+		transform.position = Vector3.MoveTowards(transform.position, target_point, 5);
     }
 
-    void OnCollisionEnter(Collision c)
+    void OnCollisionEnter2D(Collision2D c)
     {
+		// Detect Landing
         if (c.gameObject.tag == "Platform")
         {
-            jumpReady = true;
+            jumping = false;
+			currJumpTime = 0f;
         }
     }
-
-
 }
-
-

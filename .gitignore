@@ -1,0 +1,8 @@
+*.DS_Store
+*/Library/*
+Stand\ Behind\ Me/Temp/
+Stand\ Behind\ Me/obj/
+Stand\ Behind\ Me/Assembly-CSharp.csproj
+*.sln
+*.userprefs
+*/ProjectSettings/*
