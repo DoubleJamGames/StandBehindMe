@@ -1,0 +1,1 @@
+spear_idle_ss,96,64,4shield_idle_ss,96,64,4shield_run_ss.png,96,64,11

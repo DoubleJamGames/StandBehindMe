@@ -24,29 +24,49 @@ public class Shield_Movement : MonoBehaviour
 		Vector3 new_offset = Vector3.zero;
 		//============= Input Detection ==================
 		// Detect lateral movement
-		if (Input.GetKey (KeyCode.LeftArrow)) 
+		if (Input.GetKey (KeyCode.A)) 
 		{
 			new_offset += Vector3.left * speed;
-		} else if (Input.GetKey (KeyCode.RightArrow)) {
+			this.GetComponent<Animator> ().SetBool ("running", true);
+		} else if (Input.GetKey (KeyCode.D)) {
 			new_offset += Vector3.right * speed;
+			this.GetComponent<Animator> ().SetBool ("running", true);
 		}
 
 		// If Jump input detected, set the state to the rising jump phase
-		if (Input.GetKey(KeyCode.UpArrow) && !jumping) 
+		if (Input.GetKey(KeyCode.W) && !jumping) 
 		{
 			jumping = true;
+			// notify animator that we are jumping
+			this.GetComponent<Animator> ().SetInteger ("jump_state", 1);
 		}
 		//============================================
 
 
 		if (jumping) {
-			new_offset += Vector3.up * (jumpPower - (jumpDecel * currJumpTime));
+			float vertVelocity = (jumpPower - (jumpDecel * currJumpTime));
+			if (vertVelocity < 0) {
+				// notify animator that we are falling
+				this.GetComponent<Animator> ().SetInteger ("jump_state", 2);
+			}
+			new_offset += Vector3.up * vertVelocity;
 			currJumpTime += Time.deltaTime;
 		}
 
 		//===================== TRANSFORM POSITION UPDATE =================
 		Vector3 target_point = transform.position += new_offset * Time.deltaTime;
 		transform.position = Vector3.MoveTowards(transform.position, target_point, 5);
+
+		if (new_offset.x < 0) {
+//			this.GetComponent<Animator> ().SetBool ("horizontal_flip", true);
+			transform.localScale = new Vector3(-1f, 1f, 1f);
+		} else if (new_offset.x > 0) {
+//			this.GetComponent<Animator> ().SetBool ("horizontal_flip", false);
+			transform.localScale = new Vector3(1f, 1f, 1f);
+		} else if (new_offset.x == 0) {
+			this.GetComponent<Animator> ().SetBool ("running", false);
+		}
+
 	}
 
 	void OnCollisionEnter2D(Collision2D c)
@@ -55,6 +75,8 @@ public class Shield_Movement : MonoBehaviour
 		if (c.gameObject.tag == "Platform")
 		{
 			jumping = false;
+			//notify animator that we are no longer jumping
+			this.GetComponent<Animator> ().SetInteger ("jump_state", 0);
 			currJumpTime = 0f;
 		}
 	}
