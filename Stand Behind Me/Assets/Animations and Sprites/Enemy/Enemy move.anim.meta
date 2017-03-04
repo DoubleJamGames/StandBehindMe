@@ -1,6 +1,10 @@
 fileFormatVersion: 2
 guid: 4f1a5755ce63de443a2fbcb516f14b0d
+<<<<<<< HEAD
 timeCreated: 1488333920
+=======
+timeCreated: 1488308030
+>>>>>>> Updated player sprites, spritesheets, and animation controllers
 licenseType: Free
 NativeFormatImporter:
   userData: 
