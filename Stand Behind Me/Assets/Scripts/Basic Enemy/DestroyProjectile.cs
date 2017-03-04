@@ -1,13 +1,13 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class DieAfterDistance : MonoBehaviour
+public class DestroyProjectile : MonoBehaviour
 {
     Rigidbody2D rb2d;
 
     void Start()
     {
-        rb2d = GetComponent<Rigidbody2D>(); 
+        rb2d = GetComponent<Rigidbody2D>();
     }
     void OnCollisionEnter2D()
     {

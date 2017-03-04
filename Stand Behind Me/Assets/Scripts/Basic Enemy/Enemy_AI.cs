@@ -2,48 +2,81 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Enemy_AI : MonoBehaviour {
+public class Enemy_AI : MonoBehaviour
+{
 
-	public GameObject Players;
-	public GameObject Enemy;
+    public GameObject Players;
+    public GameObject Enemy;
     public GameObject fireballPrefab;
+    public float timer = 0f;
+    public float delaymove = 0f;
     GameObject clone;
+    string facing;
+    bool stopped = false;
+    
 
     public float speed = 3f;
     public float distance;
 
-    [HideInInspector] public string currentState;
- 
-	// Use this for initialization
-	void Start () {
-        currentState = "Look";
+    [HideInInspector]
+    public string currentState;
 
-		
-	}
-	
-	// Update is called once per frame
-	void Update () {
+    void FixedUpdate()
+    {
+        if (stopped && (timer >= 5f))
+        {
+            Debug.Log(facing);
+            if (facing == "left")
+            {
+                clone = (Instantiate(fireballPrefab, new Vector3((transform.position.x - 1), transform.position.y), transform.rotation)) as GameObject; // Quaternion.Euler(new Vector2(0,0)))) as GameObject;
+                clone.GetComponent<Rigidbody2D>().AddForce(Vector2.left * 200f);
+                timer = 0f;
+            }
+            else if (facing == "right")
+            {
+                clone = (Instantiate(fireballPrefab, new Vector3((transform.position.x + 1), transform.position.y), transform.rotation)) as GameObject;
+                clone.GetComponent<Rigidbody2D>().AddForce(Vector2.right * 200f);
+                timer = 0f;
+            }
+
+        }
+        else
+        {
+            timer++;
+        }
+
+    }
+    // Update is called once per frame
+    void Update()
+    {
 
         Vector3 offset = Vector3.zero;
+        distance = Enemy.transform.position.x - Players.transform.position.x;
 
-        //RaycastHit2D hit = Physics2D.Raycast(Enemy.transform.position, Vector3.left);
-        //if (hit.collider.gameObject.tag.Equals("Player"))
-
-        distance = Mathf.Abs(Players.transform.position.x) - Mathf.Abs(Enemy.transform.position.x);
-
-        Debug.Log(distance);
+        //Debug.Log(distance);
         if (distance >= 0)
         {
+            facing = "left";
             if (distance <= 2)
             {
 
-                clone = (Instantiate(fireballPrefab, transform.position, transform.rotation)) as GameObject;
-                clone.GetComponent<Rigidbody2D>().AddForce(Vector2.left * 100f);
-
+                stopped = true;
             }
             else if (distance < 10)
             {
-                offset = Vector3.left * speed;
+                if (delaymove >= 5f)
+                {
+                    stopped = false;
+                    facing = "left";
+                    offset = Vector3.left * speed;
+                    delaymove = 0f;
+                    //Debug.Log(stopped);
+                }
+                else
+                {
+                    delaymove += Time.deltaTime;
+                }
+
             }
 
             //------Move the enemy-----
@@ -52,14 +85,24 @@ public class Enemy_AI : MonoBehaviour {
         }
         else
         {
-            if (distance <= -10)
+            facing = "right";
+            if ((distance < -2) && (distance > -10))
             {
-                clone = (Instantiate(fireballPrefab, transform.position, transform.rotation)) as GameObject;
-                clone.GetComponent<Rigidbody2D>().AddForce(Vector2.right * 100f);
+                if (delaymove >= 5f)
+                {
+                    offset = Vector3.right * speed;
+                    stopped = false;
+                    delaymove = 0f;
+                }
+                else
+                {
+                    delaymove += Time.deltaTime;
+                }
+
             }
-            else if (distance < -2)
+            else
             {
-                offset = Vector3.right * speed;
+                stopped = true;
             }
 
             //------Move the enemy-----
@@ -67,5 +110,5 @@ public class Enemy_AI : MonoBehaviour {
             transform.position = Vector3.MoveTowards(transform.position, target, 5);
 
         }
-	}
+    }
 }
