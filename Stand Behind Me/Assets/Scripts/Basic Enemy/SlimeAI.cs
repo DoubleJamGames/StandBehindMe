@@ -9,8 +9,8 @@ public class SlimeAI : MonoBehaviour {
 
     float Health = 5f;
     float delayMove = 0f;
-    float speed = 3f;
-    float jumpPower = 2f;
+    float speed = 1f;
+    float jumpPower = 2.25f;
     float distance;
     
 	// Update is called once per frame

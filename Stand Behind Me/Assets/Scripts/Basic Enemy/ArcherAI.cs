@@ -23,17 +23,19 @@ public class ArcherAI : MonoBehaviour
     {
         if (stopped && (timer >= 5f))
         {
+            Transform spawn = this.gameObject.transform.GetChild(0);
+
             ///Debug.Log(facing);
             if (facing == "left")
             {
-                clone = (Instantiate(fireball, new Vector3((transform.position.x - 1), transform.position.y), transform.rotation)) as GameObject; // Quaternion.Euler(new Vector2(0,0)))) as GameObject;
-                clone.GetComponent<Rigidbody2D>().AddForce(Vector2.left * 200f);
+                clone = (Instantiate(fireball, new Vector3((spawn.position.x), spawn.position.y), spawn.rotation)) as GameObject; // Quaternion.Euler(new Vector2(0,0)))) as GameObject;
+                clone.GetComponent<Rigidbody2D>().AddForce(Vector2.left * 75f);
                 timer = 0f;
             }
             else if (facing == "right")
             {
-                clone = (Instantiate(fireball, new Vector3((transform.position.x + 1), transform.position.y), transform.rotation)) as GameObject;
-                clone.GetComponent<Rigidbody2D>().AddForce(Vector2.right * 200f);
+                clone = (Instantiate(fireball, new Vector3((spawn.position.x + 1), spawn.position.y), spawn.rotation)) as GameObject;
+                clone.GetComponent<Rigidbody2D>().AddForce(Vector2.right * 75f);
                 timer = 0f;
             }
         }
