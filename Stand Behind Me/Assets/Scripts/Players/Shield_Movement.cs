@@ -31,29 +31,41 @@ public class Shield_Movement : MonoBehaviour
 	// Update is called once per frame
 	void Update()
 	{
-		Vector3 new_offset = Vector3.zero;
+		float moveHorizontal = Input.GetAxis ("L Horizontal J1");
+		Vector3 new_offset = new Vector3 (moveHorizontal, 0, 0);
+
+		float lookHorizontal = Input.GetAxis ("R Horizontal J1");
+		Vector3 facingH = new Vector3 (lookHorizontal, 0, 0);
+
+		//Debug.Log (facingH);
+
+		float lookVertical = Input.GetAxis ("R Vertical J1");
+		Vector3 facingV = new Vector3 (0, lookVertical, 0);
 
 		//============= Input Detection ==================
 		// Detect lateral movement
-		if (Input.GetKey (KeyCode.A)) {
-			new_offset += Vector3.left * speed;
+
+		new_offset += new_offset * speed;
+
+		//if (new_offset.x < 0) {
+			
 			//			this.GetComponent<Animator> ().SetBool ("running", true);
-		} else if (Input.GetKey (KeyCode.D)) {
-			new_offset += Vector3.right * speed;
+		//} else if (new_offset.x > 0) {
+			//new_offset += new_offset * speed;
 			//			this.GetComponent<Animator> ().SetBool ("running", true);
-		}
+		//}
 
 		// Shield Input
-		if (Input.GetKey (KeyCode.LeftArrow)) {
+		if (facingH.x < 0 && facingH.x < -.5) {
 			shieldDir = "left";
-		} else if (Input.GetKey (KeyCode.RightArrow)) {
+		} else if (facingH.x > 0 && facingH.x > .5) {
 			shieldDir = "right";
-		} else if (Input.GetKey (KeyCode.UpArrow)) {
+		} else if (facingV.y < 0 && Mathf.Abs(facingH.x) < .5) {
 			shieldDir = "up";
 		}
 
 		// If Jump input detected, set the state to the rising jump phase
-		if (Input.GetKeyDown(KeyCode.W) && !jumping) 
+		if (Input.GetButtonDown("A/X J1") && !jumping) 
 		{
 			jumping = true;
 			// notify animator that we are jumping
