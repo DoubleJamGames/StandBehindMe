@@ -5,14 +5,13 @@ using UnityEngine;
 public class ArcherAI : MonoBehaviour
 {
     public GameObject target;
-    public GameObject self;
     public GameObject fireball;
     GameObject clone;
 
     float speed = 3f;
     float distance;
 
-    float Health = 5f;
+    public float Health = 5f;
     float timer = 0f;
     float delayMove = 0f;
     string facing;
@@ -21,21 +20,23 @@ public class ArcherAI : MonoBehaviour
 
     void FixedUpdate()
     {
-        if (stopped && (timer >= 5f))
+        if (stopped && (timer >= 2f))
         {
             Transform spawn = this.gameObject.transform.GetChild(0);
+
+			Vector3 towardsTarget = Vector3.Normalize(target.transform.position - spawn.position);
 
             ///Debug.Log(facing);
             if (facing == "left")
             {
                 clone = (Instantiate(fireball, new Vector3((spawn.position.x), spawn.position.y), spawn.rotation)) as GameObject; // Quaternion.Euler(new Vector2(0,0)))) as GameObject;
-                clone.GetComponent<Rigidbody2D>().AddForce(Vector2.left * 75f);
+				clone.GetComponent<Rigidbody2D>().AddForce(towardsTarget * 150f);
                 timer = 0f;
             }
             else if (facing == "right")
             {
-                clone = (Instantiate(fireball, new Vector3((spawn.position.x + 1), spawn.position.y), spawn.rotation)) as GameObject;
-                clone.GetComponent<Rigidbody2D>().AddForce(Vector2.right * 75f);
+                clone = (Instantiate(fireball, new Vector3((spawn.position.x), spawn.position.y), spawn.rotation)) as GameObject;
+				clone.GetComponent<Rigidbody2D>().AddForce(towardsTarget * 150f);
                 timer = 0f;
             }
         }
@@ -47,7 +48,7 @@ public class ArcherAI : MonoBehaviour
 
     void Update()
     {
-        distance = self.transform.position.x - target.transform.position.x;
+        distance = transform.position.x - target.transform.position.x;
 
         if (playerFound)
         {
@@ -80,14 +81,14 @@ public class ArcherAI : MonoBehaviour
             }
             else if (dist < 10)
             {
-                playerFound = false;
-                stopped = false;
+                playerFound = true;
+                stopped = true;
                 facing = "left";
                 offset = Vector3.left * speed;
             }
-
-            Vector3 mT = transform.position += offset * Time.deltaTime;
-            transform.position = Vector3.MoveTowards(transform.position, mT, 5);
+			transform.localScale = new Vector3 (-1f, 1f, 1f);
+//            Vector3 mT = transform.position += offset * Time.deltaTime;
+//            transform.position = Vector3.MoveTowards(transform.position, mT, 5);
 
         }
         else
@@ -99,30 +100,29 @@ public class ArcherAI : MonoBehaviour
             }
             else if (dist > -10)
             {
-                playerFound = false;
+                playerFound = true;
 
-                stopped = false;
+                stopped = true;
                 facing = "right";
                 offset = Vector3.right * speed;
             }
-
-            Vector3 mT = transform.position += offset * Time.deltaTime;
-            transform.position = Vector3.MoveTowards(transform.position, mT, 5);
+			transform.localScale = new Vector3 (1f, 1f, 1f);
+//            Vector3 mT = transform.position += offset * Time.deltaTime;
+//            transform.position = Vector3.MoveTowards(transform.position, mT, 5);
 
         }
     }
 
     void OnCollisionEnter2D(Collision2D collision)
     {
-        if (collision.gameObject.tag == "Player")
+		if (collision.gameObject.tag.Equals("Spear"))
         {
-            Debug.Log(Health);
-            if (Health == 0f)
-                Destroy(gameObject);
-            else
-            {
-                Health--;
-            }
+			print ("You hit an enemy!");
+			Health--;
+			if (Health == 0f) {
+				print ("You killed an enemy!!!!");
+				Destroy (gameObject);
+			}
         }
     }
 

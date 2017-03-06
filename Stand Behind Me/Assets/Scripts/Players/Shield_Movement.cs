@@ -31,6 +31,7 @@ public class Shield_Movement : MonoBehaviour
 	// Update is called once per frame
 	void Update()
 	{
+		this.GetComponent<Rigidbody2D> ().velocity = Vector3.zero;
 		float moveHorizontal = Input.GetAxis ("L Horizontal J1");
 		Vector3 new_offset = new Vector3 (moveHorizontal, 0, 0);
 

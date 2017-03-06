@@ -45,15 +45,14 @@ public class SlimeAI : MonoBehaviour {
 
     void OnCollisionEnter2D(Collision2D collision)
     {
-        if (collision.gameObject.tag == "Player")
-        {
-            Debug.Log(Health);
-            if (Health == 0f)
-                Destroy(gameObject);
-            else
-            {
-                Health--;
-            }
-        }
+		if (collision.gameObject.tag.Equals("Spear"))
+		{
+			print ("You hit an enemy!");
+			Health--;
+			if (Health == 0f) {
+				print ("You killed an enemy!!!!");
+				Destroy (gameObject);
+			}
+		}
     }
 }

@@ -135,6 +135,13 @@ public class Spear_Movement : MonoBehaviour
 		}
 	}
 
+	void onTriggerEnter2D(Collider2D c) {
+		
+		if (c.gameObject.layer.Equals ("Projectiles")) {
+			print ("You got hit!");
+		}
+	}
+
 	public void attackReady(){
 		this.GetComponent<Animator> ().SetInteger ("attack_state", 0);
 		spearBoxes [0].SetActive (false);
