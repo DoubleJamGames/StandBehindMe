@@ -11,11 +11,20 @@ public class Spear_Movement : MonoBehaviour
 
 	bool jumping = false;
 	float currJumpTime = 0f;
+	bool attacking = false;
+
+	public List<GameObject> spearBoxes;
 
 	// Use this for initialization
 	void Start()
 	{
-
+		foreach (Transform child in transform)
+		{
+			if (child.tag == "Spear")
+			{
+				spearBoxes.Add(child.gameObject);
+			}
+		}
 	}
 
 	// Update is called once per frame
@@ -24,17 +33,41 @@ public class Spear_Movement : MonoBehaviour
 		Vector3 new_offset = Vector3.zero;
 		//============= Input Detection ==================
 		// Detect lateral movement
-		if (Input.GetKey (KeyCode.LeftArrow)) 
-		{
-			new_offset += Vector3.left * speed;
-			this.GetComponent<Animator> ().SetBool ("running", true);
-		} else if (Input.GetKey (KeyCode.RightArrow)) {
-			new_offset += Vector3.right * speed;
-			this.GetComponent<Animator> ().SetBool ("running", true);
+		if (!(attacking && !jumping)) {
+			if (Input.GetKey (KeyCode.F)) {
+				new_offset += Vector3.left * speed;
+				this.GetComponent<Animator> ().SetBool ("running", true);
+			} else if (Input.GetKey (KeyCode.H)) {
+				new_offset += Vector3.right * speed;
+				this.GetComponent<Animator> ().SetBool ("running", true);
+			}
+		}
+
+
+		// Spear Input
+		if (!attacking) {
+			if (Input.GetKeyDown (KeyCode.LeftArrow)) {
+				this.GetComponent<Animator> ().SetInteger ("attack_state", 2);
+				transform.localScale = new Vector3(-1f, 1f, 1f);
+				spearBoxes [0].SetActive (true);
+				spearBoxes [1].SetActive (false);
+				attacking = true;
+			} else if (Input.GetKeyDown (KeyCode.RightArrow)) {
+				this.GetComponent<Animator> ().SetInteger ("attack_state", 3);
+				transform.localScale = new Vector3(1f, 1f, 1f);
+				spearBoxes [0].SetActive (true);
+				spearBoxes [1].SetActive (false);
+				attacking = true;
+			} else if (Input.GetKeyDown (KeyCode.UpArrow)) {
+				this.GetComponent<Animator> ().SetInteger ("attack_state", 1);
+				spearBoxes [0].SetActive (false);
+				spearBoxes [1].SetActive (true);
+				attacking = true;
+			}
 		}
 
 		// If Jump input detected, set the state to the rising jump phase
-		if (Input.GetKey(KeyCode.UpArrow) && !jumping) 
+		if (Input.GetKeyDown(KeyCode.T) && !jumping && !attacking) 
 		{
 			jumping = true;
 			// notify animator that we are jumping
@@ -58,11 +91,13 @@ public class Spear_Movement : MonoBehaviour
 		transform.position = Vector3.MoveTowards(transform.position, target_point, 5);
 
 		if (new_offset.x < 0) {
-			//			this.GetComponent<Animator> ().SetBool ("horizontal_flip", true);
-			transform.localScale = new Vector3(-1f, 1f, 1f);
+			if (!attacking) {
+				transform.localScale = new Vector3 (-1f, 1f, 1f);
+			}
 		} else if (new_offset.x > 0) {
-			//			this.GetComponent<Animator> ().SetBool ("horizontal_flip", false);
-			transform.localScale = new Vector3(1f, 1f, 1f);
+			if (!attacking) {
+				transform.localScale = new Vector3 (1f, 1f, 1f);
+			}
 		} else if (new_offset.x == 0) {
 			this.GetComponent<Animator> ().SetBool ("running", false);
 		}
@@ -79,5 +114,12 @@ public class Spear_Movement : MonoBehaviour
 			this.GetComponent<Animator> ().SetInteger ("jump_state", 0);
 			currJumpTime = 0f;
 		}
+	}
+
+	public void attackReady(){
+		this.GetComponent<Animator> ().SetInteger ("attack_state", 0);
+		spearBoxes [0].SetActive (false);
+		spearBoxes [1].SetActive (false);
+		attacking = false;
 	}
 }

@@ -1,1 +1,1 @@
-spear_idle_ss,96,64,4shield_idle_ss,96,64,4shield_run_ss.png,96,64,11
+spear_idle_ss,96,64,4shield_idle_ss,96,64,4shield_run_ss.png,96,64,11spear_attack_side.png,96,64,7shield_run_up.png,96,64,11shield_idle_up_ss.png,96,64,4shield_run_up_ss.png,96,64,11shield_jump_up,96,64,5shield_jump_up.png,96,64,5spear_attack_up.png,96,64,7
