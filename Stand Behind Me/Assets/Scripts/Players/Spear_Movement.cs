@@ -148,7 +148,8 @@ public class Spear_Movement : MonoBehaviour
 	void OnCollisionEnter2D(Collision2D c)
 	{
 		// Detect Landing
-		if (c.collider.gameObject.tag == "Platform" || c.collider.gameObject.tag == "Shield_Platform")
+		if (c.collider.gameObject.tag == "Platform" || c.collider.gameObject.tag == "Shield_Platform" 
+			|| c.collider.gameObject.layer == 16)
 		{
 			jumping = false;
 			//notify animator that we are no longer jumping
