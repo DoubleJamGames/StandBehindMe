@@ -8,13 +8,19 @@ public class Shield_Movement : MonoBehaviour
 	public float maxMovementDist = 1f;
 	public float jumpPower = 20f;
 	public float jumpDecel = 20f;
+	public List<GameObject> shields;
+	public AudioClip jumpSound;
+	public float jumpSoundVol = .5f;
 
 	bool jumping = false;
 	float currJumpTime = 0f;
 
 	string shieldDir = "right"; // right || left || up
+	private AudioSource source;
 
-	public List<GameObject> shields;
+	void Awake () {
+		source = GetComponent<AudioSource>();
+	}
 
 	// Use this for initialization
 	void Start()
@@ -72,6 +78,7 @@ public class Shield_Movement : MonoBehaviour
 		if (Input.GetButtonDown("A/X J1") && !jumping) 
 		{
 			jumping = true;
+			source.PlayOneShot(jumpSound, jumpSoundVol);
 			// notify animator that we are jumping
 			if (shieldDir.Equals("up")) {
 				this.GetComponent<Animator> ().SetInteger ("jump_state", -1);
@@ -84,7 +91,11 @@ public class Shield_Movement : MonoBehaviour
 
 		if (jumping) {
 			float vertVelocity = (jumpPower - (jumpDecel * currJumpTime));
+			if (vertVelocity >= 0) {
+				gameObject.layer = 14;
+			}
 			if (vertVelocity < 0) {
+				gameObject.layer = 8;
 				// notify animator that we are falling
 				this.GetComponent<Animator> ().SetInteger ("jump_state", 2);
 			} else {

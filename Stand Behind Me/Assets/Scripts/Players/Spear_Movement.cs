@@ -8,6 +8,10 @@ public class Spear_Movement : MonoBehaviour
 	public float maxMovementDist = 1f;
 	public float jumpPower = 20f;
 	public float jumpDecel = 20f;
+	public AudioClip jumpSound;
+	public float jumpSoundVol = .5f;
+	public AudioClip attackSound;
+	public float attackSoundVol = .5f;
 
 	bool jumping = false;
 	float currJumpTime = 0f;
@@ -15,6 +19,11 @@ public class Spear_Movement : MonoBehaviour
 	string spearDir = "right";
 
 	public List<GameObject> spearBoxes;
+	private AudioSource source;
+
+	void Awake () {
+		source = GetComponent<AudioSource>();
+	}
 
 	// Use this for initialization
 	void Start()
@@ -70,18 +79,21 @@ public class Spear_Movement : MonoBehaviour
 		// Attack Input
 		if (!attacking) {
 			if (spearDir == "left" && action > .2) {
+				source.PlayOneShot(attackSound, attackSoundVol);
 				this.GetComponent<Animator> ().SetInteger ("attack_state", 2);
 				transform.localScale = new Vector3(-1f, 1f, 1f);
 				spearBoxes [0].SetActive (true);
 				spearBoxes [1].SetActive (false);
 				attacking = true;
 			} else if (spearDir == "right" && action > .2) {
+				source.PlayOneShot(attackSound, attackSoundVol);
 				this.GetComponent<Animator> ().SetInteger ("attack_state", 3);
 				transform.localScale = new Vector3(1f, 1f, 1f);
 				spearBoxes [0].SetActive (true);
 				spearBoxes [1].SetActive (false);
 				attacking = true;
 			} else if (spearDir == "up" && action > .2) {
+				source.PlayOneShot(attackSound, attackSoundVol);
 				this.GetComponent<Animator> ().SetInteger ("attack_state", 1);
 				spearBoxes [0].SetActive (false);
 				spearBoxes [1].SetActive (true);
@@ -93,6 +105,7 @@ public class Spear_Movement : MonoBehaviour
 		if (Input.GetButtonDown("A/X J2") && !jumping && !attacking) 
 		{
 			jumping = true;
+			source.PlayOneShot(jumpSound, jumpSoundVol);
 			// notify animator that we are jumping
 			this.GetComponent<Animator> ().SetInteger ("jump_state", 1);
 		}
@@ -101,7 +114,11 @@ public class Spear_Movement : MonoBehaviour
 
 		if (jumping) {
 			float vertVelocity = (jumpPower - (jumpDecel * currJumpTime));
+			if (vertVelocity >= 0) {
+				gameObject.layer = 14;
+			}
 			if (vertVelocity < 0) {
+				gameObject.layer = 8;
 				// notify animator that we are falling
 				this.GetComponent<Animator> ().SetInteger ("jump_state", 2);
 			} else {
