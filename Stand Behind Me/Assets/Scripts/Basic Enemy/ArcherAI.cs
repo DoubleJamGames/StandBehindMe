@@ -115,7 +115,7 @@ public class ArcherAI : MonoBehaviour
 
     void OnCollisionEnter2D(Collision2D collision)
     {
-		if (collision.gameObject.tag.Equals("Spear"))
+		if (collision.collider.gameObject.tag.Equals("Spear"))
         {
 			print ("You hit an enemy!");
 			Health--;
@@ -125,5 +125,4 @@ public class ArcherAI : MonoBehaviour
 			}
         }
     }
-
 }

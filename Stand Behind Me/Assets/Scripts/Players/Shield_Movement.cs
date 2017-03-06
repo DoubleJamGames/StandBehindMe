@@ -6,7 +6,7 @@ public class Shield_Movement : MonoBehaviour
 {
 	public float speed = 3f;
 	public float maxMovementDist = 1f;
-	public float jumpPower = 12f;
+	public float jumpPower = 20f;
 	public float jumpDecel = 20f;
 
 	bool jumping = false;
@@ -21,7 +21,7 @@ public class Shield_Movement : MonoBehaviour
 	{
 		foreach (Transform child in transform)
 		{
-			if (child.tag == "Shield")
+			if (child.tag == "Shield" || child.tag == "Shield_Platform")
 			{
 				shields.Add(child.gameObject);
 			}
@@ -31,7 +31,10 @@ public class Shield_Movement : MonoBehaviour
 	// Update is called once per frame
 	void Update()
 	{
-		this.GetComponent<Rigidbody2D> ().velocity = Vector3.zero;
+		Vector3 oldVelocity = this.GetComponent<Rigidbody2D> ().velocity;
+		oldVelocity.x = 0f;
+		this.GetComponent<Rigidbody2D> ().velocity = oldVelocity;
+
 		float moveHorizontal = Input.GetAxis ("L Horizontal J1");
 		Vector3 new_offset = new Vector3 (moveHorizontal, 0, 0);
 
@@ -84,8 +87,9 @@ public class Shield_Movement : MonoBehaviour
 			if (vertVelocity < 0) {
 				// notify animator that we are falling
 				this.GetComponent<Animator> ().SetInteger ("jump_state", 2);
+			} else {
+				new_offset += Vector3.up * vertVelocity;
 			}
-			new_offset += Vector3.up * vertVelocity;
 			currJumpTime += Time.deltaTime;
 		}
 

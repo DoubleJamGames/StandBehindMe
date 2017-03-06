@@ -6,7 +6,7 @@ public class Spear_Movement : MonoBehaviour
 {
 	public float speed = 3f;
 	public float maxMovementDist = 1f;
-	public float jumpPower = 12f;
+	public float jumpPower = 20f;
 	public float jumpDecel = 20f;
 
 	bool jumping = false;
@@ -31,6 +31,10 @@ public class Spear_Movement : MonoBehaviour
 	// Update is called once per frame
 	void Update()
 	{
+		Vector3 oldVelocity = this.GetComponent<Rigidbody2D> ().velocity;
+		oldVelocity.x = 0f;
+		this.GetComponent<Rigidbody2D> ().velocity = oldVelocity;
+
 		float moveHorizontal = Input.GetAxis ("L Horizontal J2");
 		Vector3 new_offset = new Vector3 (moveHorizontal, 0, 0);
 
@@ -100,8 +104,9 @@ public class Spear_Movement : MonoBehaviour
 			if (vertVelocity < 0) {
 				// notify animator that we are falling
 				this.GetComponent<Animator> ().SetInteger ("jump_state", 2);
+			} else {
+				new_offset += Vector3.up * vertVelocity;
 			}
-			new_offset += Vector3.up * vertVelocity;
 			currJumpTime += Time.deltaTime;
 		}
 
@@ -126,7 +131,7 @@ public class Spear_Movement : MonoBehaviour
 	void OnCollisionEnter2D(Collision2D c)
 	{
 		// Detect Landing
-		if (c.gameObject.tag == "Platform")
+		if (c.collider.gameObject.tag == "Platform" || c.collider.gameObject.tag == "Shield_Platform")
 		{
 			jumping = false;
 			//notify animator that we are no longer jumping
@@ -136,7 +141,6 @@ public class Spear_Movement : MonoBehaviour
 	}
 
 	void onTriggerEnter2D(Collider2D c) {
-		
 		if (c.gameObject.layer.Equals ("Projectiles")) {
 			print ("You got hit!");
 		}
