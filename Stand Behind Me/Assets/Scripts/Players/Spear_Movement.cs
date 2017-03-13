@@ -20,6 +20,7 @@ public class Spear_Movement : MonoBehaviour
 
 	public List<GameObject> spearBoxes;
 	private AudioSource source;
+	private GameObject Shield;
 
 	void Awake () {
 		source = GetComponent<AudioSource>();
@@ -35,6 +36,8 @@ public class Spear_Movement : MonoBehaviour
 				spearBoxes.Add(child.gameObject);
 			}
 		}
+
+		Shield = GameObject.Find("Shield 1");
 	}
 
 	// Update is called once per frame
@@ -68,12 +71,20 @@ public class Spear_Movement : MonoBehaviour
 		}
 
 		// Direction Input
-		if (facingH.x < 0 && facingH.x < -.5) {
-			spearDir = "left";
-		} else if (facingH.x > 0 && facingH.x > .5) {
-			spearDir = "right";
-		} else if (facingV.y < 0 && Mathf.Abs(facingH.x) < .5) {
-			spearDir = "up";
+		if (lookHorizontal != 0 || lookVertical != 0) {
+			if (facingH.x < 0 && facingH.x < -.5) {
+				spearDir = "left";
+			} else if (facingH.x > 0 && facingH.x > .5) {
+				spearDir = "right";
+			} else if (facingV.y < 0 && Mathf.Abs (facingH.x) < .5) {
+				spearDir = "up";
+			}
+		} else {
+			if (new_offset.x < 0) {
+				spearDir = "left";
+			} else if (new_offset.x > 0) {
+				spearDir = "right";
+			}
 		}
 
 		// Attack Input
@@ -131,16 +142,36 @@ public class Spear_Movement : MonoBehaviour
 		Vector3 target_point = transform.position += new_offset * Time.deltaTime;
 		transform.position = Vector3.MoveTowards(transform.position, target_point, 5);
 
-		if (facingH.x < 0) {
+		if (spearDir == "left") {
 			if (!attacking) {
 				transform.localScale = new Vector3 (-1f, 1f, 1f);
 			}
-		} else if (facingH.x > 0) {
+		} else if (spearDir == "right") {
 			if (!attacking) {
 				transform.localScale = new Vector3 (1f, 1f, 1f);
 			}
 		} else if (new_offset.x == 0) {
 			this.GetComponent<Animator> ().SetBool ("running", false);
+		}
+
+
+		//==================== SNAP TO BROTHER ===========================
+		if (Input.GetButtonDown("SnapLeft J1"))
+		{
+			RaycastHit2D hit = Physics2D.Raycast(Shield.transform.position, Vector2.left);
+
+			if (hit.collider != null && hit.distance <= 1.5) {
+				transform.position = new Vector3(Shield.transform.position.x - 1, Shield.transform.position.y, 0);
+			}
+
+		}
+		if (Input.GetButtonDown("SnapRight J1"))
+		{
+			RaycastHit2D hit = Physics2D.Raycast(Shield.transform.position, Vector2.right);
+
+			if (hit.collider != null && hit.distance <= 1.5) {
+				transform.position = new Vector3(Shield.transform.position.x + 1, Shield.transform.position.y, 0);
+			}
 		}
 
 	}

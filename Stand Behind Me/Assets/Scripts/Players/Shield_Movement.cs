@@ -12,6 +12,9 @@ public class Shield_Movement : MonoBehaviour
 	public AudioClip jumpSound;
 	public float jumpSoundVol = .5f;
 
+	//Get the gameObject that refers to the other player
+	private GameObject Spear;
+
 	bool jumping = false;
 	float currJumpTime = 0f;
 
@@ -32,6 +35,8 @@ public class Shield_Movement : MonoBehaviour
 				shields.Add(child.gameObject);
 			}
 		}
+		//Assign the gameObject
+		Spear = GameObject.Find("Spear 1");
 	}
 
 	// Update is called once per frame
@@ -58,20 +63,29 @@ public class Shield_Movement : MonoBehaviour
 		new_offset += new_offset * speed;
 
 		//if (new_offset.x < 0) {
-			
-			//			this.GetComponent<Animator> ().SetBool ("running", true);
+
+		//			this.GetComponent<Animator> ().SetBool ("running", true);
 		//} else if (new_offset.x > 0) {
-			//new_offset += new_offset * speed;
-			//			this.GetComponent<Animator> ().SetBool ("running", true);
+		//new_offset += new_offset * speed;
+		//			this.GetComponent<Animator> ().SetBool ("running", true);
 		//}
 
 		// Shield Input
-		if (facingH.x < 0 && facingH.x < -.5) {
-			shieldDir = "left";
-		} else if (facingH.x > 0 && facingH.x > .5) {
-			shieldDir = "right";
-		} else if (facingV.y < 0 && Mathf.Abs(facingH.x) < .5) {
-			shieldDir = "up";
+
+		if (lookHorizontal != 0 || lookVertical != 0) {
+			if (facingH.x < 0 && facingH.x < -.5) {
+				shieldDir = "left";
+			} else if (facingH.x > 0 && facingH.x > .5) {
+				shieldDir = "right";
+			} else if (facingV.y < 0 && Mathf.Abs (facingH.x) < .5) {
+				shieldDir = "up";
+			}
+		} else {
+			if (new_offset.x < 0) {
+				shieldDir = "left";
+			} else if (new_offset.x > 0) {
+				shieldDir = "right";
+			}
 		}
 
 		// If Jump input detected, set the state to the rising jump phase
@@ -143,7 +157,7 @@ public class Shield_Movement : MonoBehaviour
 				transform.localScale = new Vector3(-1.3f, 1.3f, 1f);
 			} else if (shieldDir.Equals("up")) {
 				this.GetComponent<Animator> ().SetInteger ("move_state", -2);
-//				transform.localScale = new Vector3(1f, 1f, 1f);
+				//				transform.localScale = new Vector3(1f, 1f, 1f);
 			}
 		}
 
@@ -157,6 +171,25 @@ public class Shield_Movement : MonoBehaviour
 		} else if (shieldDir.Equals("up")) {
 			shields [0].SetActive(false);
 			shields [1].SetActive(true);
+		}
+
+		//==================== SNAP TO BROTHER ===========================
+		if (Input.GetButtonDown("SnapLeft J1"))
+		{
+			RaycastHit2D hit = Physics2D.Raycast(Spear.transform.position, Vector2.left);
+
+			if (hit.collider != null && hit.distance <= 1.5) {
+				transform.position = new Vector3(Spear.transform.position.x - 1, Spear.transform.position.y, 0);
+			}
+
+		}
+		if (Input.GetButtonDown("SnapRight J1"))
+		{
+			RaycastHit2D hit = Physics2D.Raycast(Spear.transform.position, Vector2.right);
+
+			if (hit.collider != null && hit.distance <= 1.5) {
+				transform.position = new Vector3(Spear.transform.position.x + 1, Spear.transform.position.y, 0);
+			}
 		}
 	}
 
