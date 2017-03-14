@@ -5,6 +5,7 @@ public class DestroyProjectile : MonoBehaviour
 {
 
     public ParticleSystem Explode;
+    private ParticleSystem clone;
     
 	void OnTriggerEnter2D(Collider2D c)
     {
@@ -15,8 +16,13 @@ public class DestroyProjectile : MonoBehaviour
 			print ("You blocked a projectile. Good job");
 			Destroy (gameObject);
 
-            Instantiate(Explode, c.gameObject.transform.position, c.gameObject.transform.rotation);
-            
+            clone = Instantiate(Explode, c.transform.position, Explode.transform.rotation);
+   
+        }
+        else if (c.gameObject.tag.Equals("Shield_Platform"))
+        {
+            Destroy(gameObject);
+            clone = Instantiate(Explode, c.transform.position, Explode.transform.rotation);
         }
     }
 }
